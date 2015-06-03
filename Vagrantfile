@@ -1,11 +1,20 @@
-Vagrant::Config.run do |config|
+server_ip     = "192.168.99.30"
+hostname      = "development.nodejs.local"
+
+Vagrant.configure("2") do |config|
   config.vm.box = "precise32"
-  
+
   config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
-  config.vm.forward_port 3000, 3000
+  # config.vm.share_folder "app", "/home/vagrant/app", "app"
+  config.vm.hostname = hostname
 
-  config.vm.share_folder "app", "/home/vagrant/app", "app"
+    config.vm.network :private_network, ip: server_ip
+    config.ssh.forward_agent = true
+    config.vm.network :forwarded_port, guest: 3000, host: 3000
+
+    config.vm.synced_folder "~/Projects", "/vagrant", type: "nfs"
+
 
   # Uncomment the following line to allow for symlinks
   # in the app folder. This will not work on Windows, and will
@@ -20,9 +29,9 @@ Vagrant::Config.run do |config|
       "nodejs" => {
         "version" => "0.10.29"
         # uncomment the following line to force
-	# recent versions (> 0.8.5) to be built from
-	# the source code
-	# , "from_source" => true
+  # recent versions (> 0.8.5) to be built from
+  # the source code
+  # , "from_source" => true
       }
     }
   end
